@@ -10,20 +10,23 @@ import java.util.ArrayList;
  * @author Iván Villa
  */
 public class Match {
-    private ArrayList <MatchPlayer> matchPlayer;
+    private ArrayList <MatchPlayer> matchPlayers;
+    private int matchId;
 
     /**
      * Constructor with parameters
-     * @param matchPlayer list of players
+     * @param matchPlayers list of players
      */
-    public Match(ArrayList<MatchPlayer> matchPlayer) {
-        this.matchPlayer = matchPlayer;
+    public Match(ArrayList<MatchPlayer> matchPlayers, int matchId) {
+        this.matchPlayers = matchPlayers;
+        this.matchId = matchId;
     }
 
     /**
      * Constructor simple
      */
     public Match() {
+        matchPlayers = new ArrayList<>();
     }
 
     // GETTERS AND SETTERS
@@ -33,7 +36,7 @@ public class Match {
      * @return player
      */
     public ArrayList<MatchPlayer> getMatchPlayer() {
-        return matchPlayer;
+        return matchPlayers;
     }
 
     /**
@@ -41,7 +44,22 @@ public class Match {
      * @param matchPlayer player
      */
     public void setMatchPlayer(ArrayList<MatchPlayer> matchPlayer) {
-        this.matchPlayer = matchPlayer;
+        this.matchPlayers = matchPlayer;
     }
-    
+
+    /**
+     * REturn id
+     * @return id
+     */
+    public int getMatchId() {
+        return matchId;
+    }
+
+    /**
+     * Set id
+     * @param matchId id
+     */
+    public void setMatchId(int matchId) {
+        this.matchId = matchId;
+    }
 }

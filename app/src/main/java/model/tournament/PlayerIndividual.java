@@ -34,7 +34,7 @@ public class PlayerIndividual extends TournamentPlayer{
      * Get player
      * @return player
      */
-    public User getPlayer() {
+    public User getUser() {
         return player;
     }
 
@@ -45,5 +45,9 @@ public class PlayerIndividual extends TournamentPlayer{
     public void setPlayer(User player) {
         this.player = player;
     }
-    
+
+    @Override
+    public String toString(){
+        return player.getName();
+    }
 }

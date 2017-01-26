@@ -16,12 +16,7 @@ import android.widget.TextView;
  */
 public class MainMenu extends AppCompatActivity {
 
-    Button btTournaments;
-    Button btHosts;
-    Button btRankings;
-    Button btMessages;
-    Button btProfile;
-    Button btLogOut;
+    Button btFutureTournaments, btRankings, btMessages, btProfile, btLogOut, btInProgressTournaments;
     TextView hello;
 
     @Override
@@ -32,19 +27,11 @@ public class MainMenu extends AppCompatActivity {
         hello = (TextView)findViewById(R.id.tvHello);
         hello.setText("Hello "+loadUserName()+"!");
         //Button for Tournaments
-        btTournaments = (Button)findViewById(R.id.btTournaments);
-        btTournaments.setOnClickListener(new View.OnClickListener() {
+        btFutureTournaments = (Button)findViewById(R.id.btFutureTournaments);
+        btFutureTournaments.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchTournaments();
-            }
-        });
-        //Button for Hosts
-        btHosts = (Button)findViewById(R.id.btHosts);
-        btHosts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchHosts();
             }
         });
         //Button for Rankings
@@ -79,16 +66,14 @@ public class MainMenu extends AppCompatActivity {
                 logout();
             }
         });
-
-    }
-
-    /**
-     * Load the username from SharedPreferences
-     */
-    public String loadUserName(){
-        Log.i("SharedPreferences","Loading Username");
-        SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-        return prefs.getString("marvinName","");
+        //Button for tournaments in progress
+        btInProgressTournaments = (Button)findViewById(R.id.btInProgressTournaments);
+        btInProgressTournaments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inProgressTournaments();
+            }
+        });
     }
 
     /**
@@ -100,35 +85,31 @@ public class MainMenu extends AppCompatActivity {
     }
 
     /**
-     * Launch hosts activity
-     */
-    public void launchHosts(){
-        Intent myIntent = new Intent(this,ListHosts.class);
-        startActivity(myIntent);
-    }
-
-    /**
      * Launch rankings activity
      */
     public void launchRankings(){
-        Intent myIntent = new Intent(this,Working.class);
-        startActivity(myIntent);
+        startActivity(new Intent(this,Working.class));
     }
 
     /**
      * Launch messages activity
      */
     public void launchMessages(){
-        Intent myIntent = new Intent(this,Working.class);
-        startActivity(myIntent);
+        startActivity(new Intent(this,Working.class));
     }
 
     /**
      * Launch profile activity
      */
     public void launchProfile(){
-        Intent myIntent = new Intent(this,Profile.class);
-        startActivity(myIntent);
+        startActivity(new Intent(this,Profile.class));
+    }
+
+    /**
+     * Open in progress tournaments
+     */
+    public void inProgressTournaments(){
+        startActivity(new Intent(this,ListTournamentsInProgress.class));
     }
 
     /**
@@ -138,8 +119,18 @@ public class MainMenu extends AppCompatActivity {
         Log.i("SharedPreferences","Cleaning Username");
         SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("marvinName","");
+        editor.putString("marvinName","null");
         editor.commit();
+        startActivity( new Intent(this,LoginForm.class));
         this.finish();
+    }
+
+    /**
+     * Load the username from SharedPreferences
+     */
+    public String loadUserName(){
+        Log.i("SharedPreferences","Loading Username");
+        SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        return prefs.getString("marvinName","");
     }
 }

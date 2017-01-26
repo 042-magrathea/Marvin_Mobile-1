@@ -15,7 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import simulateServer.LogInRealData;
+import data.QueryExistsUser;
+import tools.LogIn;
 
 /**
  * Activity with a login form
@@ -23,9 +24,7 @@ import simulateServer.LogInRealData;
  */
 public class LoginForm extends AppCompatActivity {
 
-    Button btLogin;
-    Button btSignIn;
-    Button btExit;
+    Button btLogin,btSignIn;
     EditText etName;
     EditText etPassword;
 
@@ -41,6 +40,15 @@ public class LoginForm extends AppCompatActivity {
         setSupportActionBar(toolbar);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        // If we have one logged user, we go to profile directly
+        if(loadUserName()!="null"){
+            // If there is user with that name
+            QueryExistsUser queryExistsUser = new QueryExistsUser(loadUserName());
+            queryExistsUser.executeQuery();
+            if (queryExistsUser.getExists()){
+                startActivity(new Intent(this, Profile.class));
+            }
+        }
     }
 
     /**
@@ -52,6 +60,7 @@ public class LoginForm extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_menu, menu);
+
         // Text Fields
         etName = (EditText)findViewById(R.id.etName);
         etPassword = (EditText)findViewById(R.id.etPassword);
@@ -69,14 +78,6 @@ public class LoginForm extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signIn();
-            }
-        });
-        // Exit Button
-        btExit = (Button)findViewById(R.id.btExit);
-        btExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                endApp();
             }
         });
         return true;
@@ -107,21 +108,23 @@ public class LoginForm extends AppCompatActivity {
      * Go to login action
      */
     public void login(){
-        // Comprobamos el login
-        LogInRealData myLogin = new LogInRealData();
-        // Leemos lo escrito por el usuario
         String userName = etName.getText().toString();
         String userPassword = etPassword.getText().toString();
-        // Comprobamos
-        String mensaje;
-        if (myLogin.login(userName,userPassword)){
-            SaveUserName(userName);
-            Intent mainMenu = new Intent(this, MainMenu.class);
-            startActivity(mainMenu);
+        // If there is user with that name
+        QueryExistsUser queryExistsUser = new QueryExistsUser(userName);
+        queryExistsUser.executeQuery();
+        if (queryExistsUser.getExists()){
+            // We try the user/password combination
+            LogIn myLogin = new LogIn(userName,userPassword);
+            if (myLogin.login()){
+                saveUserName(userName);
+                startActivity(new Intent(this, Profile.class));
+            } else {
+                toastMessage(getString(R.string.incorrectLogin));
+                etPassword.setText("");
+            }
         } else {
-            Toast toast = Toast.makeText(getApplicationContext(),"Datos incorrectos.", Toast.LENGTH_SHORT);
-            toast.show();
-            etPassword.setText("");
+            toastMessage(getString(R.string.userDoesntExists));
         }
     }
 
@@ -129,27 +132,42 @@ public class LoginForm extends AppCompatActivity {
      * SignIn action
      */
     public void signIn(){
-        Intent signInForm = new Intent(this, SignInForm.class);
         clearForm();
-        startActivity(signInForm);
-    }
-
-    /**
-     * Exit action
-     */
-    public void endApp()
-    {
-        this.finish();
+        startActivity(new Intent(this, SignInForm.class));
     }
 
     /**
      * Store the username we are using on sharedpreferences
      */
-    public void SaveUserName(String username){
-        Log.i("SharedPreferences","Saving Username");
+    public void saveUserName(String username){
+        Log.i("Shared name",username);
         SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("marvinName",username);
         editor.commit();
+    }
+
+    /**
+     * Send a toast message
+     * @param message the message
+     */
+    public void toastMessage(String message){
+        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    /**
+     * Load the username from SharedPreferences
+     */
+    public String loadUserName(){
+        Log.i("SharedPreferences","Loading Username");
+        SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        return prefs.getString("marvinName","");
+    }
+
+    /**
+     * Testing feeature
+     */
+    public void testFeature() {
     }
 }
